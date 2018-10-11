@@ -1,0 +1,26 @@
+算法整体说明：
+Stage 1:P-Net采用全卷积神经网络，即P-Net，去获得候选窗体和边界回归向量。
+同时，候选窗体根据边界框进行校准。然后，利用NMS方法去除重叠窗体。
+stage 2:R-Net，将经过P-Net确定的包含候选窗体的图片在R-Net网络中训练，网络最后选用全连接的方式进行训练。
+利用边界框向量微调候选窗体，再利用NMS去除重叠窗体。
+stage 3：O-Net，将经过R-Net确定的包含候选窗体的图片在O-Net网络中训练，
+网络最后选用全连接的方式进行训练。利用边界框向量微调候选窗体，再利用NMS去除重叠窗体。
+只是在去除重叠候选窗口的同时，显示五个人脸关键点定位。
+
+数据生成过程：
+	下载人脸数据（链接：http://mmlab.ie.cuhk.edu.hk/projects/WIDERFace/）放到prepare_data下面，仅放关于图片的文件夹，关于注解文件已经在项目中。
+　　　下载人脸标定数据（链接：http://mmlab.ie.cuhk.edu.hk/archive/CNN_FacePoint.htm）放到prepare_data下面，仅放关于图片的文件夹，关于注解文件已经在项目中。
+　　　生成PNet的训练数据：依次运行prepare_data文件夹下的gen_12net_data.py、gen_landmark_aug_12.py、gen_imglist_pnet.py、gen_PNet_tfrecords.py文件。
+　　　生成RNet的训练数据：依次运行prepare_data文件夹下的gen_24hard_example.py、gen_landmark_aug_24.py、gen_imglist_rnet.py、gen_RNet_tfrecords.py文件。注意gen_RNet_tfrecords.py需要运行4次，依次运行截图代码见下图：
+　　　
+　　　
+注意item和name名字要一致。
+　　　生成ONet的训练数据：依次运行prepare_data文件夹下的gen_48hard_example.py、gen_landmark_aug_48.py、gen_imglist_onet.py、gen_ONet_tfrecords.py文件。注意gen_RNet_tfrecords.py需要运行4次，修改地方参照RNet。
+训练过程：
+　　　依次运行train_PNet、train_RNet、train_ONet。
+测试过程：
+　　　这里只给出了单张照片的测试，运行one_image_test.py即可。
+　　　
+运行环境：
+　　　Tensorflow-gpu1.9
+　　　Python3.5
